@@ -1,14 +1,14 @@
 const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const webpackConfig = {
 	entry: path.resolve(__dirname, "src", "index.js"),
 
 	output: {
-		filename: "main.js",
-		path: path.resolve(__dirname, "dist")
+		filename: "[name].[contenthash].bundle.js",
+		path: path.resolve(__dirname, "dist"),
+		clean: true // <----
 	},
-
-	mode: "production",
 
 	module: {
 		rules: [
@@ -32,6 +32,30 @@ const webpackConfig = {
 			}
 		]
 	},
+
+	plugins: [
+		new HtmlWebpackPlugin({
+			title: "vanillaJS app",
+			template: path.resolve(__dirname, "src", "index.html")
+		})
+	],
+
+	optimization: {
+		splitChunks: {
+			cacheGroups: {
+				node_vendors: {
+					name: "vendor",
+					test: /[\\/]node_modules[\\/]/,
+					chunks: "all",
+					priority: 1
+				}
+			}
+		}
+	},
+
+	devtool: "inline-source-map",
+	
+	mode: "production",
 };
 
 module.exports = webpackConfig;
